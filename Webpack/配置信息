@@ -48,7 +48,7 @@ module.exports = {
     watch : true
 }
 
-3.webpack打包React            //https://segmentfault.com/q/1010000004895884/a-1020000004895919
+3.webpack打包React            
 var webpack = require('webpack');
 var path = require('path');
 // var React = require('react');
@@ -80,5 +80,3 @@ module.exports = {
 2）var React = require("react");var ReactDOM = require("react-dom");
 3)引入bundle.js的时候  script类型为  text/javasript   而非text/babel（直接引入react、react-dom、browser.min.js的时候类型是text/babel）
 
-
-5.webpack  详解地址  https://segmentfault.com/a/1190000007914129
