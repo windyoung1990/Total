@@ -1,0 +1,84 @@
+1.打包react并压缩文件
+var React = require('react');                //引入react模块
+var webpack = require('webpack');    
+module.exports = {
+    entry: [                                            //文件入口
+        './build/react.js',
+        './build/react-dom.js',
+        './build/browser.min.js'
+    ],
+    output : {
+        path : __dirname + "/bundle/",
+        filename : "bundle.js"
+    }
+}
+
+2.webpack打包并压缩命令   webpack  -p
+3.webpack基本配置
+var webpack = require("webpack");
+var path = require('path');
+module.exports = {
+    entry : [
+        './js/entry.js'
+    ],
+    output : {
+        path :'./bundle/',
+        filename : 'bundle.js'
+    },
+    module : {
+
+    },
+    // loaders: [
+ //    {
+ //        test: require.resolve('./js/jquery-1.9.1.min.js'),
+ //        loader: 'script'
+ //    }
+    // ],
+    // plugins: [
+    //     new webpack.ProvidePlugin({
+    //         $: './js/jquery-1.9.1.min.js'
+    //     })
+    // ],
+    externals: {
+        jquery: 'window.$'            //引入jquery的方法，在页面中直接引入jquery，然后在需要用到的页面var $ = require('jquery');
+    },
+    resolve : {
+        extensions : ['','.js','.json']
+    },
+    watch : true
+}
+
+3.webpack打包React            //https://segmentfault.com/q/1010000004895884/a-1020000004895919
+var webpack = require('webpack');
+var path = require('path');
+// var React = require('react');
+module.exports = {
+    entry : ['./app.js'],
+    output : {
+        path : __dirname,
+        filename : "./bundle/bundle.js"
+    },
+    resolve: {
+        extensions: ['', '.js', '.jsx']
+    },
+    module: {
+        loaders: [
+          {
+            test: /\.jsx?$/,
+            exclude: /(node_modules|bower_components)/,
+            loader: 'babel',
+            query: {
+              presets: ['react', 'es2015']
+            }
+          }
+        ]
+    }
+}    
+
+4.webpack打包react需要注意事项
+1）node-module模块文件位置在D:  -> reactAndWebpack下
+2）var React = require("react");var ReactDOM = require("react-dom");
+3)引入bundle.js的时候  script类型为  text/javasript   而非text/babel（直接引入react、react-dom、browser.min.js的时候类型是text/babel）
+
+
+5.webpack  详解地址  https://segmentfault.com/a/1190000007914129
