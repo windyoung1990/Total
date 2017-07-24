@@ -1,0 +1,49 @@
+<html>
+	<head></head>
+	<body>
+	<script>
+		function loadImageAsync(url){
+			return new Promise(function(resolve,reject){
+				var image = new Image();
+				image.onload = function(){
+					resolve(image);
+				};
+				image.onerror = function(){
+					reject(new Error('Could not load image at' + url));
+				};
+				image.src = url;
+			})
+		}
+		loadImageAsync("http://imgs.xin.com/newwap/img/place2.png").then(function(value){
+			console.log(value.src);
+		})
+		var getJson = function(url){
+	var promise = new Promise(function(resolve,reject){
+		var client = new XMLHttpRequest();
+		client.open("GET",url);
+		client.onreadystatechange = handler;
+		client.responseType = "json";
+		client.setRequestHeader("Accept","application/json");
+		client.setRequestHeader("Origin","http://m.xin.com");
+		client.send();
+		function handler(){
+			if(this.readState != 4){
+				return;
+			}
+			if(this.status === 200){
+				resolve(this.response);
+			}else{
+				reject(new Error(this.statusText));
+			}
+		}
+	});
+	return promise;
+}
+getJson("https://pandacdn.xin.com/web/resource/get_resource?callback=jsonpCallback&request=%7B%22imp%22%3A%5B%7B%22id%22%3A1%2C%22tagid%22%3A%22U2Mb3905c%22%2C%22banner%22%3A%7B%22mines%22%3A%5B%5D%7D%2C%22admtype%22%3A2%7D%2C%7B%22id%22%3A2%2C%22tagid%22%3A%22U2M6c995d%22%2C%22banner%22%3A%7B%22mines%22%3A%5B%5D%7D%2C%22admtype%22%3A2%7D%2C%7B%22id%22%3A3%2C%22tagid%22%3A%22U2M70aa9c%22%2C%22banner%22%3A%7B%22mines%22%3A%5B%5D%7D%2C%22admtype%22%3A2%7D%5D%2C%22device%22%3A%22%22%7D").then(function(json){
+	console.log("Content :" + json);
+},function(error){
+	console.log('出错了',error);
+})
+	</script>		
+	</body>
+</html>
