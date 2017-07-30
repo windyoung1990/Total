@@ -4,29 +4,29 @@ Math.max.apply(Math, value);
 
 //数字 三位一组分割
 function  addChar(str) {            
-	var  newStr  =  "";            
-	var  count  =  0;            
-	str  =  str + "";            
+	var newStr  =  "";            
+	var count  =  0;            
+	str = str + "";            
 	for (var i = str.length - 1; i >= 0 ; i--) {                
-		if (count%3 == 0  &&  count  !=  0) {                    
-			newStr  =  str.charAt(i)  +  ","  +  newStr;                
-		} else {                    
-			newStr  =  str.charAt(i)  +  newStr;                
+		if(count%3 == 0  &&  count  !=  0) {                    
+			newStr = str.charAt(i) + ","  + newStr;                
+		}else{                    
+			newStr = str.charAt(i) + newStr;                
 		}                
 		count++;            
 	}            
-	str  =  newStr  +  "";            
-	return  str;            
+	str = newStr + "";            
+	return str;            
 }
 //获取url参数
 function  getUrlParam(name)  {    
-	var  reg  =  new  RegExp("(^|&)"  +  name  +  "=([^&]*)(&|$)");  //构造一个含有目标参数的正则表达式对象	    
-	var  r  =  window.location.search.substr(1).match(reg);   //匹配目标参数   
-	if(r  !=  null)  {        
+	var reg = new RegExp("(^|&)" + name +  "=([^&]*)(&|$)");  //构造一个含有目标参数的正则表达式对象	    
+	var r = window.location.search.substr(1).match(reg);   //匹配目标参数   
+	if(r != null)  {        
 		return  r[2];    
 	} 
 	else{        
-		return  null;  //返回参数值	    
+		return null;  //返回参数值	    
 	}
 }
 
@@ -54,11 +54,11 @@ function isFunction(x) {    
 
 //让不同时区的时间显示一致
   
-var  time  =  new  Date();  
-var  offsetTime  =  -(time.getTimezoneOffset() + 480) * 60000;   
+var time = new Date();  
+var offsetTime = -(time.getTimezoneOffset() + 480) * 60000;   
 console.log(offsetTime);   
-var  time1  =  new  Date(data.activity.startTime - offsetTime);   
-var  time2  =  new  Date(data.activity.endTime - offsetTime);
+var time1 = new Date(data.activity.startTime - offsetTime);   
+var time2 = new Date(data.activity.endTime - offsetTime);
 
 //使用type=file上传图片
 
@@ -116,14 +116,14 @@ upload3.addEventListener("change", upload, false); 
 //获取cookie值
   
 function getCookie(name) {        
-	var  cookie  =  document.cookie.split('; ');
-	for  (var  i  =  0;  i  <  cookie.length;  i++)  {            
-		var  arr  =  cookie[i].split('=');            
-		if  (name  ==  arr[0])  {                
-			return  arr[1];            
+	var cookie = document.cookie.split('; ');
+	for(var i = 0; i < cookie.length; i++)  {            
+		var arr = cookie[i].split('=');            
+		if(name == arr[0])  {                
+			return arr[1];            
 		}        
 	}        
-	return  undefined;    
+	return undefined;    
 }
 	//设置cookie值
 	    
@@ -171,12 +171,15 @@ var arr = [
 		b : 1   
 	}    
 ];    
-function  sortFunction(obj1, obj2) {        
-	if (obj1.a  >  obj2.a) {            
-		return  1;        
-	}    
+function  sortFunction(property) {        
+	return function(obj1, obj2){
+		if(obj1[property]  >  obj2[property]) {            
+			return  1;        
+		} 
+	}
+	   
 }    
-arr.sort(sortFunction)
+arr.sort(sortFunction("a"))
 console.log(arr);
 //判断一个对象是否是空对象
 function isEmptyObj(obj) {  
@@ -186,3 +189,4 @@ function isEmptyObj(obj) {  
 	}  
 	return isEmpty;
 }
+
