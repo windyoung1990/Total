@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>float</title>
+    <style>
+        *{
+            padding: 0;
+            margin:0;
+        }
+        .t1,.t2,.t3{height: 200px;}
+       .t1{
+        width: 100px;
+        float: left;
+        background: red;
+       }
+       .t2{
+        background: blue;
+        width: 100px;
+        float: right;
+       }
+       .t3{
+            margin: 0 100px;
+            background: yellow;
+       }
+       .main,.left,.right{height: 100px;}
+       .main{
+        float: left;
+        width: 100%;
+
+       }
+       .body{
+        background: red;
+        height: 100%;
+        margin: 0 200px;
+       }
+       .left{
+        float: left;
+        background: yellow;
+        width: 200px;
+        margin-left: -100%;
+       }
+       .right{
+        float: left;
+        width: 200px;
+        background: blue;
+        margin-left: -200px;
+       }
+    </style>
+</head>
+<body>
+        <!-- 三列左右两边固定，中间自适应布局 -->
+        <!-- 自身浮动法：左栏左浮动，右栏右浮动，主体直接放后面，就实现了自适应。 -->
+       <!--  <div class="div1">
+        这是div1
+        </div>
+        <div class="div2">
+            <div style="float:left">这是一个浮动的标题</div>
+            <div style="clear:both"></div>
+        </div> -->
+       <!--  <div class="t1"></div>
+        <div class="t2"></div>
+        <div class="t3"></div> -->
+        <!-- margin负值法 -->
+        <div class="wrap">
+            <div class="main">
+                <div class="body">
+                    
+                </div>
+            </div>
+            <div class="left">
+                
+            </div>
+            <div class="right"></div>
+
+        </div>
+</body>
+</html>
