@@ -1,6 +1,6 @@
-*git commit之前，运行git status看看当前仓库的状态  
-*git diff可以查看修改内容。  
-*git log --pretty=oneline log日志单行显示  
+* git commit之前，运行git status看看当前仓库的状态  
+git diff可以查看修改内容。  
+git log --pretty=oneline log日志单行显示  
 git reset --hard 3628164  回退代码到某一个版本  
 git reflog 历史操作记录 包括reset后的操作  
 git diff HEAD -- readme.txt命令可以查看工作区和版本库里面最新版本的区别  
