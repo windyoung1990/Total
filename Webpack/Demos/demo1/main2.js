@@ -1,0 +1,1 @@
+document.write("<h2>I like webpack</h2>")
