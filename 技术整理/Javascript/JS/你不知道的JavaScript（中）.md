@@ -197,3 +197,47 @@ if(!Date.now){
 }
 ```
 # 类型转换
+## 转换规则
+### ToString
+* 基本类型值的字符串化规则为：null 转换为"null"，undefined 转换为"undefined"，true转换为"true"。数字的字符串化则遵循通用规则;
+* 对普通对象来说，除非自行定义，否则toString()（Object.prototype.toString()）返回内部属性[[Class]] 的值（参见第3 章），如"[object Object]"
+* 数组的默认toString() 方法经过了重新定义，将所有单元字符串化以后再用"," 连接起来：
+```javacsript
+var a = [1,2,3];
+a.toString(); // "1,2,3"
+```
+* JSON.stringify(..) 在将JSON 对象序列化为字符串时也用到了ToString。
+* 对大多数简单值来说，JSON 字符串化和toString() 的效果基本相同，只不过序列化的结果总是字符串：
+```javascript
+JSON.stringify( 42 ); // "42"
+JSON.stringify( "42" ); // ""42"" （含有双引号的字符串）
+JSON.stringify( null ); // "null"
+JSON.stringify( true ); // "true"
+```
+* JSON.stringify(..) 在对象中遇到undefined、function 和symbol 时会自动将其忽略，在数组中则会返回null（以保证单元位置不变）。
+```javascript
+JSON.stringify( undefined ); // undefined
+JSON.stringify( function(){} ); // undefined
+JSON.stringify(
+[1,undefined,function(){},4]
+); // "[1,null,null,4]"
+JSON.stringify(
+{ a:2, b:function(){} }
+); // "{"a":2}"
+```
+### 几个不太为人所知但却非常有用的功能
+* 可以向JSON.stringify(..) 传递一个可选参数replacer，它可以是数组或者函数，用来指定对象序列化过程中哪些属性应该被处理，哪些应该被排除，
+```javascript
+var a = {
+  b : 42,
+  c : "42",
+  d : [1,2,3]
+};
+JSON.stringify(a,["b","c"]);//"{"b":42,"c":"42"}"
+JSON.stringify(a,function(k,v){
+console.log(k,v);
+if(k != "c"){
+  return v;
+}
+})//"{"b":42,"d":[1,2,3]}"
+```
