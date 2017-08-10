@@ -65,3 +65,15 @@ o.foo(); // 3
 ```
 ### 检查对象类型
 * Object.prototype.toString.call( strObject ).slice(8,-1)
+### Object.create
+```javascript
+if(!Object.create){
+  Object.create = function(o){
+    function F(){
+    };
+    F.prototype = o;
+    return new F();
+  }
+}
+```
+### 如果你需要自我引用的话，那最好使用传统的具名函数表达式来定义对应的函数（ · baz: function baz(){..}· ），不要使用简洁方法。
