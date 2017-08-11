@@ -227,6 +227,8 @@ JSON.stringify(
 ```
 ### 几个不太为人所知但却非常有用的功能
 * 可以向JSON.stringify(..) 传递一个可选参数replacer，它可以是数组或者函数，用来指定对象序列化过程中哪些属性应该被处理，哪些应该被排除，
+* 如果replacer 是一个数组，那么它必须是一个字符串数组，其中包含序列化要处理的对象的属性名称，除此之外其他的属性则被忽略。
+* 如果replacer 是一个函数，它会对对象本身调用一次，然后对对象中的每个属性各调用一次，每次传递两个参数，键和值。
 ```javascript
 var a = {
   b : 42,
@@ -241,3 +243,109 @@ if(k != "c"){
 }
 })//"{"b":42,"d":[1,2,3]}"
 ```
+* JSON.string 还有一个可选参数space，用来指定输出的缩进格式。space 为正整数时是指定每一级缩进的字符数，它还可以是字符串，此时最前面的十个字符被用于每一级的缩进：
+```javascript
+var a = {
+ b: 42,
+ c: "42",
+ d: [1,2,3]
+};
+JSON.stringify( a, null, 3 );
+// "{
+//    "b": 42,
+//    "c": "42",
+//    "d": [
+//       1,
+//       2,
+//       3
+//    ]
+// }"
+
+```
+### ToNumber
+* 中true 转换为1，false 转换为0。undefined 转换为NaN，null 转换为0
+* 为了将值转换为相应的基本类型值，检查该值是否有valueOf() 方法。如果有并且返回基本类型值，就使用该值进行强制类型转换。如果没有就使用toString()的返回值（如果存在）来进行强制类型转换。
+* 如果valueOf() 和toString() 均不返回基本类型值，会产生TypeError 错误
+* 从ES5 开始，使用Object.create(null) 创建的对象[[Prototype]] 属性为null，并且没有valueOf() 和toString() 方法，因此无法进行强制类型转换
+```javascript
+var a = {
+valueOf: function(){
+return "42";
+}
+};
+var b = {
+toString: function(){
+return "42";
+}
+};
+var c = [4,2];
+c.toString = function(){
+return this.join( "" ); // "42"
+};
+Number( a ); // 42
+Number( b ); // 42
+Number( c ); // 42
+Number( "" ); // 0
+Number( [] ); // 0
+Number( [ "abc" ] ); // NaN
+```
+### ToBoolean
+* 可以转换为假值 • undefined  • null  • false  • +0、-0 和NaN  • ""
+## 显式类型转换
+### 数字和字符串之间的显式类型转换
+* 字符串和数字之间的转换是通过String(..) 和Number(..) 这两个内建函数来实现的，请注意它们前面没有new 关键字，并不创建封装对象。
+* 日期显式转换为数字
+```javascript
+//获取当前时间戳
++ new Date();
+(new Date()).getTime();
+Date.now();//ES5
+```
+### 奇特的~运算符
+* ~ 返回2 的补码。~x 大致等同于-(x+1)
+```javascript
+~42; // -(42+1) ==> -43
+```
+### 显式解析数字字符串
+* 解析字符串中的数字和将字符串强制类型转换为数字的返回结果都是数字。但解析和转换两者之间还是有明显的差别。
+``` javascript
+var a = "42";
+var b = "42px";
+强制类型转换 ｜ 63
+Number( a ); // 42
+parseInt( a ); // 42
+Number( b ); // NaN    转换不允许出现非数字字符，否则会失败并返回NaN。
+parseInt(b); //42   解析允许字符串中含有非数字字符，解析按从左到右的顺序，如果遇到非数字字符就停止。
+```
+* 从ES5 开始parseInt(..) 默认转换为十进制数，除非另外指定。如果你的代码需要在ES5之前的环境运行，请记得将第二个参数设置为10。
+* 一些看起来奇怪但实际上解释的通的例子
+```javascript
+parseInt( 0.000008 ); // 0 ("0" 来自于 "0.000008")
+parseInt( 0.0000008 ); // 8 ("8" 来自于 "8e-7")
+parseInt( false, 16 ); // 250 ("fa" 来自于 "false")
+parseInt( parseInt, 16 ); // 15 ("f" 来自于 "function..")
+parseInt( "0x10" ); // 16
+parseInt( "103", 2 ); // 2
+```
+### 显式转换为布尔值
+* 在if(..).. 这样的布尔值上下文中，如果没有使用Boolean(..) 和!!，就会自动隐式地进行ToBoolean 转换。建议使用Boolean(..) 和!! 来进行显式转换以便让代码更清晰易读。
+### 隐式地简化
+* 如果+ 的其中一个操作数是字符串（或者通过以上步骤可以得到字符串），则执行字符串拼接；否则执行数字加法。
+### 布尔值到数字的隐式强制类型转换
+```javascript
+function onlyOne() {
+var sum = 0;
+for (var i=0; i < arguments.length; i++) {
+// 跳过假值，和处理0一样，但是避免了NaN
+if (arguments[i]) {
+sum += arguments[i];
+}
+}
+return sum == 1;
+}
+var a = true;
+var b = false;
+onlyOne( b, a ); // true
+onlyOne( b, a, b, b, b ); // true
+```
+### 隐式强制类型转换为布尔值
