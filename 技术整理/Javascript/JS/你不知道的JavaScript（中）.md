@@ -348,4 +348,150 @@ var b = false;
 onlyOne( b, a ); // true
 onlyOne( b, a, b, b, b ); // true
 ```
-### 隐式强制类型转换为布尔值
+### 假值的想等比较
+```javascript
+"0" == null;// false
+"0" == undefined;//false
+"0" == false;//true
+"0" == NaN;//false
+"0" == 0;//true
+"0" == "";//false
+false == null;//false
+false == undefined;//false
+false == NaN;//false
+false == 0;//true
+false == "";//true
+false == [];//true
+false == {};//false
+"" == null;//false
+"" == undefined;//false
+"" == NaN;//false
+"" == 0;//true
+"" == [];//true
+"" == {};//false
+0 == null;//false
+0 == undefined;//false
+0 == NaN;//false
+0 == [];//true
+0 == {};//false
+```
+### 安全运用隐式强制类型转换
+* 如果两边的值中有 true 或者 false,千万不要使用 ==。
+* 如果两边的值中有 []、"" 或者 0,尽量不要使用 ==。
+### 字符串比较
+＊ 如果出现非字符串，规则将双方强制类型转换未数字来进行比较
+｀｀｀javascript
+var a = [42];
+var b = ["43"];
+a < b ;//true
+｀｀｀
+* 如果比较双方都是字符串，则按字母顺序来进行比较
+｀｀｀javascript
+var a = ["42"];
+var b = ["043"];
+a < b ;//false
+｀｀｀
+# 语法
+* 代码块的结果值就如同一个隐式的返回,即返回最后一个语句的结果值 
+* 语法不允许我们获得语句的结果值并将其赋值给另一个变量
+```javascript
+//下面的代码无法运行
+var a,b;
+a = if(true){
+b = 50 + 20;
+}
+```
+### 表达式的副作用
+＊ 大部分表达式没有副作用，常见的有副作用的表达式是函数调用
+```javascript
+function foo() {
+   a = a + 1;
+}
+var a = 1;
+foo(); // 结果值:undefined。副作用:a的值被改变
+```
+* 提取元音字母
+```javascript
+function vowels(str){
+var matches;
+if(str){
+  //提取所有元音字母
+  matches = str.match(/[aeiou]/g);
+  if(matches){
+  return matches;
+  }
+}
+}
+```
+＊ 可以利用赋值语句的副作用将两个if语句合二为一
+```javascript
+function vowels(str){
+var matches;
+if(str && (matches = str.match(/[aeiou]/g))){
+  return matches;
+}
+}
+```
+### 代码块
+```javascript
+[] + {}; // "[object Object]"  
+{} + []; // 0  {}被当作空代码块（不执行任何操作）
+```
+### 对象解构
+```javascript
+function getData(){
+return {
+a : 42,
+b : "foo"
+}
+}
+var {a,b} = getData();
+console.log(a,b); //42 "foo"
+```
+* {...}还可以用作函数命名参数的对象解构，方便隐式地用对象属性赋值
+```javascript
+function foo({a,b}){
+console.log(a,b);
+}
+foo({a:12,b:"foo"});
+```
+### 提前使用变量，暂时性死区（tdz）
+* TDZ 指的是由于代码中的变量还没有初始化而不能被引用的情况。
+```javascript
+ {
+          a = 2;      // ReferenceError!
+          let a;
+}
+//a = 2试图在let a初始化a之前使用该变量(其作用域在{ .. }内),这里就是a的TDZ,会产生错误。
+```
+* 对未声明变量使用 typeof 不会产生错误(参见第 1 章),但在 TDZ 中却会报错
+```javascript
+{
+typepf a; //undefined
+typeof b; //ReferenceError! (TDZ)
+let b;
+}
+```
+### 函数参数
+＊ 向函数传递参数时,arguments 数组中的对应单元会和命名参数建立关联(linkage)以得 到相同的值。相反,不传递参数就不会建立关联。但在严格模式中，没有建立关联这一说。
+```javascript
+function foo(a){
+a = 42;
+console.log(arguments[0]);
+}
+foo(0); //42 (linked)
+foo(); //undefined (not linked)
+```
+### switch
+```javascript
+ var a = "hello world";
+     var b = 10;
+     switch (true) {
+             case (a || b == 10):// 永远执行不到这里  
+                     break;
+             default:
+                     console.log( "Oops" );
+}
+//因为(a || b == 10)的结果是"hello world"而非true,所以严格相等比较不成立。此时 可以通过强制表达式返回 true 或 false,如 case !!(a || b == 10)
+```
+
