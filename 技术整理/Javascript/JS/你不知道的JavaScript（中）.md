@@ -391,6 +391,22 @@ var a = ["42"];
 var b = ["043"];
 a < b ;//false
 ｀｀｀
+### 比较少见的情况
+＊ 返回其他数字
+```javascript
+Number.prototype.valueOf = function(){
+return 3;
+}
+new Number(43) == 3; //true
+//更奇怪的
+var i = 2;
+Number.prototype.valueOf = function(){
+return i++;
+};
+if(a == 2 && a == 3){
+console.log("Yep.this happened.");
+}
+```
 # 语法
 * 代码块的结果值就如同一个隐式的返回,即返回最后一个语句的结果值 
 * 语法不允许我们获得语句的结果值并将其赋值给另一个变量
@@ -494,4 +510,13 @@ foo(); //undefined (not linked)
 }
 //因为(a || b == 10)的结果是"hello world"而非true,所以严格相等比较不成立。此时 可以通过强制表达式返回 true 或 false,如 case !!(a || b == 10)
 ```
-
+# 混合环境javascript
+* 在创建带有 id 属性的 DOM 元素时也会创建同名的全局变量
+```javascript
+<div id="foo"></div>
+if (typeof foo == "undefined") {
+foo = 42; // 永远也不会运行
+}
+console.log( foo ); // HTML元素
+```
+* 一个广为人知的 JavaScript 的最佳实践是:不要扩展原生原型
