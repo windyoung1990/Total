@@ -9,3 +9,4 @@
 * Git还提供了一个stash功能，可以把当前工作现场“储藏”起来，等以后恢复现场后继续工作,git stash list命令看看,工作现场还在，Git把stash内容存在某个地方了，但是需要恢复一下，有两个办法：一是用git stash apply恢复，但是恢复后，stash内容并不删除，你需要用git stash drop来删除；另一种方式是用git stash pop，恢复的同时把stash内容也删了.  
 * 如果要丢弃一个没有被合并过的分支，可以通过git branch -D <name>强行删除  
 * 要查看远程库的信息，用git remote  
+* 拉取远程分支信息到本地  git checkout -b local-branchname origin/remote_branchname 
