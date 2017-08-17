@@ -520,3 +520,177 @@ foo = 42; // 永远也不会运行
 console.log( foo ); // HTML元素
 ```
 * 一个广为人知的 JavaScript 的最佳实践是:不要扩展原生原型
+# 异步 现在和将来
+## 分块的程序
+* 任何时候，只要把一段代码包装成一个函数，并指定它在响应某个事件（定时器、鼠标点击、Ajax 响应等）时执行，你就是在代码中创建了一个将来执行的块，也由此在这个程序中引入了异步机制。
+## 异步控制台
+* console.* 方法族并不是JavaScript 正式的一部分，而是由宿主环境（请参考本书的“类型和语法”部分）添加到JavaScript 中的。
+* 控制台I/O 会延迟,如果遇到这种少见的情况，最好的选择是在JavaScript 调试器中使用断点，而不要依赖控制台输出。次优的方案是把对象序列化到一个字符串中，以强制执行一次“快照”，比如通过JSON.stringify(..)。
+## 事件循环
+* JavaScript 引擎本身并没有时间的概念，只是一个按需执行JavaScript 任意代码片段的环境。“事件”（JavaScript 代码执行）调度总是由包含它的环境进行。
+### 回调函数的回调执行机制
+* 举例： 程序发送AJAX请求，从服务器中获取数据
+* 在回调函数中设置响应代码
+* 引擎通知宿主环境：现在我要暂停执行，你一旦完成网络请求，拿到了数据，就请调用这个函数
+* 浏览器就会设置侦听来自网络的响应，拿到要给你的数据之后，就会把回调函数插入到事件循环
+### setTimeout并没有把你的回调函数挂在事件循环队列中。它所做的是设定一个定时器。当定时器到时后，环境会把你的回调函数放在事件循环中，这样，在未来某个时刻的tick 会摘下并执行这个回调
+### 完整运行
+* 由于JavaScript 的单线程特性，foo()（以及bar()）中的代码具有原子性。也就是说，一旦foo() 开始运行，它的所有代码都会在bar() 中的任意代码运行之前完成，或者相反。这称为完整运行（run-to-completion）特性。
+```javascript
+var a = 1;
+var b = 2;
+function foo(){
+  a++;
+  b = b*a;
+  a = b + 3;
+}
+function bar(){
+  b--;
+  a = 8 + b;
+  b = a * 2;
+}
+ajax( "http://some.url.1", foo );
+ajax( "http://some.url.2", bar );
+//由于foo() 不会被bar() 中断，bar() 也不会被foo() 中断，所以这个程序只有两个可能的输出，取决于这两个函数哪个先运行
+```
+### 并发
+* 第一个“进程”在用户向下滚动页面触发onscroll 事件时响应这些事件（发起Ajax 请求要求新的内容）。第二个“进程”接收Ajax 响应（把内容展示到页面）
+* 显然，如果用户滚动页面足够快的话，在等待第一个响应返回并处理的时候可能会看到两个或更多onscroll 事件被触发，因此将得到快速触发彼此交替的onscroll 事件和Ajax 响应事件。
+### 非交互
+```javascript
+var res = {};
+function foo(results) {
+res.foo = results;
+}
+function bar(results) {
+res.bar = results;
+}
+// ajax(..)是某个库提供的某个Ajax函数
+ajax( "http://some.url.1", foo );
+ajax( "http://some.url.2", bar );
+//foo() 和bar() 是两个并发执行的“进程”，按照什么顺序执行是不确定的。但是，我们构建程序的方式使得无论按哪种顺序执行都无所谓，因为它们是独立运行的，不会相互影响。
+```
+### 交互
+```javascript
+//两个并发的“进程”通过隐含的顺序相互影响，这个顺序有时会被破坏
+var res = [];
+function response(data) {
+res.push( data );
+}
+// ajax(..)是某个库中提供的某个Ajax函数
+ajax( "http://some.url.1", response );
+ajax( "http://some.url.2", response );
+//这里的并发“进程”是这两个用来处理Ajax 响应的response() 调用。它们可能以任意顺序运行。我们假定期望的行为是res[0] 中放调用"http://some.url.1" 的结果，res[1] 中放调用"http://some.url.2" 的结果。有时候可能是这样，但有时候却恰好相反，这要视哪个调用先完成而定。这种不确定性很有可能就是一个竞态条件bug。
+```
+```javascript
+//可以协调交互顺序来处理这样的竞态条件
+var res = [];
+function response(data) {
+if (data.url == "http://some.url.1") {
+res[0] = data;
+}
+else if (data.url == "http://some.url.2") {
+res[1] = data;
+}
+}
+// ajax(..)是某个库中提供的某个Ajax函数
+ajax( "http://some.url.1", response );
+ajax( "http://some.url.2", response );
+```
+```javscript
+//另外一种协调场景 门
+var a, b;
+function foo(x) {
+a = x * 2;
+if (a && b) {
+baz();
+}
+}
+function bar(y) {
+b = y * 2;
+if (a && b) {
+baz();
+}
+}
+function baz() {
+console.log( a + b );
+}
+// ajax(..)是某个库中的某个Ajax函数
+ajax( "http://some.url.1", foo );
+ajax( "http://some.url.2", bar );
+```
+```javascript
+//另外一种协调场景 闩
+var a;
+function foo(x) {
+if (!a) {
+a = x * 2;
+baz();
+}
+}
+function bar(x) {
+if (!a) {
+a = x / 2;
+baz();
+}
+}
+function baz() {
+console.log( a );
+}
+// ajax(..)是某个库中的某个Ajax函数
+ajax( "http://some.url.1", foo );
+ajax( "http://some.url.2", bar );
+```
+### 并发协作
+```javascript
+异步：现在与将来 ｜ 155
+var res = [];
+// response(..)从Ajax调用中取得结果数组
+function response(data) {
+// 一次处理1000个
+var chunk = data.splice( 0, 1000 );
+// 添加到已有的res组
+res = res.concat(
+// 创建一个新的数组把chunk中所有值加倍
+chunk.map( function(val){
+return val * 2;
+} )
+);
+// 还有剩下的需要处理吗？
+if (data.length > 0) {
+// 异步调度下一次批处理
+setTimeout( function(){
+response( data );
+}, 0 );
+}
+}
+// ajax(..)是某个库中提供的某个Ajax函数
+ajax( "http://some.url.1", response );
+ajax( "http://some.url.2", response );
+//我们把数据集合放在最多包含1000 条项目的块中。这样，我们就确保了“进程”运行时间会很短，即使这意味着需要更多的后续“进程”，因为事件循环队列的交替运行会提高站点/App 的响应（性能）。
+```
+### 任务
+* 在ES6 中，有一个新的概念建立在事件循环队列之上，叫作任务队列（job queue）。这个概念给大家带来的最大影响可能是Promise 的异步特性
+* 对于任务队列最好的理解方式就是，它是挂在事件循环队列的每个tick 之后的一个队列。在事件循环的每个tick 中，可能出现的异步动作不会导致一个完整的新事件
+添加到事件循环队列中，而会在当前tick 的任务队列末尾添加一个项目（一个任务）。
+* 事件循环队列类似于一个游乐园游戏：玩过了一个游戏之后，你需要重新到队尾排队才能再玩一次。而任务队列类似于玩过了游戏之后，插队接着继续玩。
+* 任务和setTimeout(..0) hack 的思路类似，但是其实现方式的定义更加良好，对顺序的保证性更强：尽可能早的将来。
+### 小结
+* 一旦有事件需要运行，事件循环就会运行，直到队列清空。事件循环的每一轮称为一个tick。用户交互、IO 和定时器会向事件队列中加入事件。
+* 任意时刻，一次只能从队列中处理一个事件。执行事件的时候，可能直接或间接地引发一个或多个后续事件。
+* 并发是指两个或多个事件链随时间发展交替执行，以至于从更高的层次来看，就像是同时在运行（尽管在任意时刻只处理一个事件）。
+* 通常需要对这些并发执行的“进程”（有别于操作系统中的进程概念）进行某种形式的交互协调，比如需要确保执行顺序或者需要防止竞态出现。这些“进程”也可以通过把自身分割为更小的块，以便其他“进程”插入进来。
+# 回调
+## continuation
+* 回调函数包裹或者是封装了程序的延续
+# Promise
+* Promise.all([ .. ])接受一个promise数组并返回一个新的promise
+### 回调编码的信任问题
+* 调用回调过早
+* 调用回调过晚（或不被调用）
+* 调用回调次数过少或过多
+* 未能传递所需的环境和参数
+* 吞掉可能出现的错误和异常
+
+
+
