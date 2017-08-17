@@ -189,4 +189,24 @@ function isEmptyObj(obj) {  
 	}  
 	return isEmpty;
 }
+/** 获取对象样式兼容处理**/
+function getStyle(obj, name) {
+	if (window.getComputedStyle) {
+		return window.getComputedStyle(obj, false)[name];
+	} else {
+		return obj.currentStyle[name];
+	}
+}
+/*设置样式*/ 
+function setStyle(obj,name,value){
+	obj.style[name] = value;
+}
 
+/*操作样式*/
+function operateStyle(obj,name,value){
+	if(value){
+		setStyle(obj,name,value)
+	}else{
+		 getStyle(obj, name)
+	}
+}
