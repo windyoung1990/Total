@@ -10,3 +10,10 @@
 var UA = navigator.userAgent;
 var isQQ = (/qq/gi).test(UA) && (!(/qqbrowser/gi).test(UA));
 ```
+### setTimeout函数传参
+```javascript
+function aa(num){
+  console.log(num);
+}
+setTimeout(aa,100,20)//100ms后，打印出20
+```
