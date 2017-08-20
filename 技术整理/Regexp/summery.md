@@ -78,3 +78,12 @@ return parseInt(matchStr) + 1;
 })
 ```
 
+
+```javscript
+"a1b2c3d4e5".replace(/(\d)(\w)(\d)/g,function(match,group1,group2,group3,index,origin){
+console.log(match);
+return group1 + group3;
+})
+//"1b2" "3d4"  "a12c34e5"
+```
+
