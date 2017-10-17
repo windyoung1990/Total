@@ -1,0 +1,27 @@
+<html>
+    <head>
+        <title>行高测试</title>
+        <meta charset="utf-8">
+        <style>
+            .parent{
+                width: 200px;
+                font-size: 16px;
+                line-height: 1.5em;
+            }
+            .child{
+                font-size: 30px;
+                background: red;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="parent">
+            <!-- 父元素行高是倍数如1.5时，子元素的行高是该倍数乘以子元素字体大小 -->
+            <!-- 父元素行高是百分比或者em时，比如150%或者1.5em 子元素行高是继承该数值乘以父元素的字体大小-->
+            <div class="child">
+                Web前端开发<br />
+                line-height行高问题
+            </div>
+        </div>
+    </body>
+</html>
