@@ -113,7 +113,6 @@ function getGuid(){        
 ```javascript
 // 常用的一些工具库
 var littleTools = {
-var littleTools = {
     // 数组中的最大值
     maxValueInArray: function(arr) {
         return Math.max.apply(Math, arr);
@@ -190,6 +189,5 @@ var littleTools = {
         }
     },
     
-}
 }
 ```
