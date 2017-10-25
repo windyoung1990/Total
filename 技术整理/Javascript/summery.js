@@ -1,55 +1,8 @@
-//比较数组中的最大最小值：
-var value = [2, 1, 4, 5, 3];
-Math.max.apply(Math, value);
-
-//数字 三位一组分割
-function  addChar(str) {            
-	var newStr  =  "";            
-	var count  =  0;            
-	str = str + "";            
-	for (var i = str.length - 1; i >= 0 ; i--) {                
-		if(count%3 == 0  &&  count  !=  0) {                    
-			newStr = str.charAt(i) + ","  + newStr;                
-		}else{                    
-			newStr = str.charAt(i) + newStr;                
-		}                
-		count++;            
-	}            
-	str = newStr + "";            
-	return str;            
-}
-//获取url参数
-function  getUrlParam(name)  {    
-	var reg = new RegExp("(^|&)" + name +  "=([^&]*)(&|$)");  //构造一个含有目标参数的正则表达式对象	    
-	var r = window.location.search.substr(1).match(reg);   //匹配目标参数   
-	if(r != null)  {        
-		return  r[2];    
-	} 
-	else{        
-		return null;  //返回参数值	    
-	}
-}
-
-//过滤标签正则表达式：
-str.replace(/<.*?style[^>]*?>.*?(<\/.*?style.*?>)*/ig, '')
 //类属性
 function classof(o) {  
 	if (o === null) return "Null";  
 	if (o === undefined) return "Undefined";  
 	return Object.prototype.toString.call(o).slice(8, -1);
-}
-//求数组最大值的方法:
-  
-var a = [1, 2, 3, 4];
-Math.max.apply(null, a);  
-var a = [1, 2, 3, 4];
-a.reduce(function(x, y) {
-	return x > y ? x : y
-});
-//判断是否是函数 
- 
-function isFunction(x) {    
-	return Object.prototype.toString().call(x) === "[object Function]";
 }
 
 //让不同时区的时间显示一致
@@ -157,56 +110,86 @@ function getGuid(){        
 		}        
 	}    
 }
-
-//数组对象排序
-var arr = [
-	{            
-		a : 1,
-		b : 2        
-	},{            
-		a : 3,
-		b : 3        
-	},{            
-		a : 2,
-		b : 1   
-	}    
-];    
-function  sortFunction(property) {        
-	return function(obj1, obj2){
-		if(obj1[property]  >  obj2[property]) {            
-			return  1;        
-		} 
-	}
-	   
-}    
-arr.sort(sortFunction("a"))
-console.log(arr);
-//判断一个对象是否是空对象
-function isEmptyObj(obj) {  
-	var isEmpty = false;  
-	for (var prop in obj) {     
-		isEmpty = true;  
-	}  
-	return isEmpty;
+```javascript
+// 常用的一些工具库
+var littleTools = {
+var littleTools = {
+    // 数组中的最大值
+    maxValueInArray: function(arr) {
+        return Math.max.apply(Math, arr);
+    },
+    //获取url参数
+    getUrlParam: function(name) {
+        var  reg  = new  RegExp("(^|&)"  + name  +  "=([^&]*)(&|$)");  //构造一个含有目标参数的正则表达式对象      
+        var  r = window.location.search.substr(1).match(reg);   //匹配目标参数   
+        if (r  != null)  {        
+            return  r[2];    
+        } 
+        else {        
+            return null;  //返回参数值       
+        }
+    },
+    // 数字 三位一组分割，添加逗号
+    addChar: function(str) {
+        var  newStr  =  "";            
+        var  count  =  0;            
+        str  = str + "";            
+        for (var i = str.length - 1; i >= 0; i--) {                
+            if (count % 3  == 0  &&  count  !=  0) {                    
+                newStr  = str.charAt(i)  + ","  + newStr;                
+            } else {                    
+                newStr  = str.charAt(i)  + newStr;                
+            }                
+            count++;            
+        }            
+        str = newStr  +  "";            
+        return  str; 
+    },
+    // 过滤标签
+    replaceLable: function(str) {
+        return str.replace(/<.*?style[^>]*?>.*?(<\/.*?style.*?>)*/ig, '');
+    },
+    // 是否是函数
+    isFunction: function(obj) {
+        return Object.prototype.toString().call(obj) === "[object Function]";
+    },
+    // 判断一个对象是否是空对象
+    isEmptyObj: function(obj) {
+        var isEmpty = false;  
+        for (var prop in obj) {     
+            isEmpty = true;  
+        }  
+        return isEmpty;
+    },
+    // 获取对象样式兼容处理
+    getStyle: function(obj, name) {
+        if (window.getComputedStyle) {
+            return window.getComputedStyle(obj, false)[name];
+        } else {
+            return obj.currentStyle[name];
+        }
+    },
+    // 设置样式
+    setStyle: function(obj, name, value) {
+        obj.style[name] = value;
+    },
+    // 操作样式
+    operateStyle: function(obj, name, value) {
+        if (value) {
+            this.setStyle(obj, name, value)
+        } else {
+            this.getStyle(obj, name)
+        }
+    },
+    // 数组对象排序 调用方式arr.sort(sortFunction("a"))
+    sortFunction: function(property) {
+        return function(obj1, obj2) {
+            if (obj1[property]  >  obj2[property]) {            
+                return  1;        
+            } 
+        }
+    },
+    
 }
-/** 获取对象样式兼容处理**/
-function getStyle(obj, name) {
-	if (window.getComputedStyle) {
-		return window.getComputedStyle(obj, false)[name];
-	} else {
-		return obj.currentStyle[name];
-	}
 }
-/*设置样式*/ 
-function setStyle(obj,name,value){
-	obj.style[name] = value;
-}
-
-/*操作样式*/
-function operateStyle(obj,name,value){
-	if(value){
-		setStyle(obj,name,value)
-	}else{
-		 getStyle(obj, name)
-	}
-}
+```
