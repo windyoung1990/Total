@@ -186,6 +186,25 @@ var littleTools = {
                 return  1;        
             } 
         }
-    }    
+    },
+    _setCookie: function(name, value, domain, path, expires, secure){
+    	document.cookie = [name,'=',value,';','domain','=',domain,';','path','=',path,';','expires','=',expires,';',(secure ? 'secure' : ''), ';' ].join('');
+    },
+    _getCookie: function(name){
+    	var reg = new RegExp(name + '\s*=\s*([^\;]+)\;*'),
+            result = reg.exec(document.cookie);
+            return result && result.length > 1 ? result[1] : "";
+    },
+    _getGuid: function(){
+    	var guid = '';
+	for (var i = 1; i <= 32; i++){
+	    var n = Math.floor(Math.random() * 16.0).toString(16);
+	    guid += n;
+	    if((i == 8) || (i == 12) || (i == 16) || (i == 20)){
+	        guid += '-';
+	    }
+	}
+	return guid;
+    }
 }
 ```
