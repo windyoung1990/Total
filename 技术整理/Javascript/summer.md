@@ -205,6 +205,6 @@ var littleTools = {
 	    }
 	}
 	return guid;
-    }
+    },
 }
 ```
